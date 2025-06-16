@@ -2,198 +2,191 @@
 class Clientes {
     constructor() {
         this.clientes = Storage.carregar(CONFIG.STORAGE_KEYS.CLIENTES) || [];
+        this.inicializarEventos();
     }
 
     // Renderiza a página de clientes
     renderizar(container) {
         container.innerHTML = `
+            <div class="page-header">
+                <h2>Clientes</h2>
+                <button class="btn btn-primary btn-novo-cliente">
+                    <i class="material-icons">add</i>
+                    Novo Cliente
+                </button>
+            </div>
+
             <div class="clientes-container">
-                <div class="clientes-lista" id="clientes-lista">
-                    ${this.renderizarLista()}
-                </div>
-            </div>
-        `;
-
-        this.inicializarEventos();
-    }
-
-    // Renderiza a lista de clientes
-    renderizarLista() {
-        if (this.clientes.length === 0) {
-            return `
-                <div class="sem-dados">
-                    <span class="material-icons">people</span>
-                    <p>Nenhum cliente cadastrado</p>
-                </div>
-            `;
-        }
-
-        return `
-            <div class="tabela-container">
-                <table class="tabela">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>WhatsApp</th>
-                            <th>Data de Nascimento</th>
-                            <th>Tipo de Pele</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${this.clientes.map(cliente => `
+                <div class="clientes-lista">
+                    <table>
+                        <thead>
                             <tr>
-                                <td>${cliente.nome}</td>
-                                <td>${cliente.whatsapp}</td>
-                                <td>${this.formatarData(cliente.dataNascimento)}</td>
-                                <td>${cliente.tipoPele}</td>
-                                <td>
-                                    <button class="btn-acao" onclick="app.clientes.editarCliente(${cliente.id})">
-                                        <span class="material-icons">edit</span>
-                                    </button>
-                                    <button class="btn-acao" onclick="app.clientes.visualizarHistorico(${cliente.id})">
-                                        <span class="material-icons">history</span>
-                                    </button>
-                                    <button class="btn-acao" onclick="app.clientes.excluirCliente(${cliente.id})">
-                                        <span class="material-icons">delete</span>
-                                    </button>
-                                </td>
+                                <th>Nome</th>
+                                <th>Telefone</th>
+                                <th>Email</th>
+                                <th>Última Visita</th>
+                                <th>Ações</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }
+                        </thead>
+                        <tbody>
+                            ${this.clientes.map(cliente => `
+                                <tr>
+                                    <td>${cliente.nome}</td>
+                                    <td>${cliente.telefone}</td>
+                                    <td>${cliente.email || '-'}</td>
+                                    <td>${cliente.ultimaVisita || '-'}</td>
+                                    <td>
+                                        <button class="btn-icon btn-editar-cliente" data-id="${cliente.id}">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+                                        <button class="btn-icon btn-excluir-cliente" data-id="${cliente.id}">
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
 
-    // Renderiza o formulário de cliente
-    renderizarFormulario(cliente = null) {
-        const isEdicao = cliente !== null;
-        const titulo = isEdicao ? 'Editar Cliente' : 'Novo Cliente';
-
-        return `
-            <div class="formulario-container">
-                <h3>${titulo}</h3>
-                <form id="form-cliente" class="formulario">
-                    <input type="hidden" id="cliente-id" value="${cliente?.id || ''}">
-                    
-                    <div class="campo">
-                        <label for="nome">Nome Completo</label>
-                        <input type="text" id="nome" name="nome" required value="${cliente?.nome || ''}">
-                    </div>
-
-                    <div class="campo">
-                        <label for="whatsapp">WhatsApp</label>
-                        <input type="tel" id="whatsapp" name="whatsapp" required value="${cliente?.whatsapp || ''}">
-                    </div>
-
-                    <div class="campo">
-                        <label for="dataNascimento">Data de Nascimento</label>
-                        <input type="date" id="dataNascimento" name="dataNascimento" required value="${cliente?.dataNascimento || ''}">
-                    </div>
-
-                    <div class="campo">
-                        <label for="tipoPele">Tipo de Pele</label>
-                        <select id="tipoPele" name="tipoPele" required>
-                            <option value="">Selecione...</option>
-                            <option value="Normal" ${cliente?.tipoPele === 'Normal' ? 'selected' : ''}>Normal</option>
-                            <option value="Seca" ${cliente?.tipoPele === 'Seca' ? 'selected' : ''}>Seca</option>
-                            <option value="Oleosa" ${cliente?.tipoPele === 'Oleosa' ? 'selected' : ''}>Oleosa</option>
-                            <option value="Mista" ${cliente?.tipoPele === 'Mista' ? 'selected' : ''}>Mista</option>
-                            <option value="Sensível" ${cliente?.tipoPele === 'Sensível' ? 'selected' : ''}>Sensível</option>
-                        </select>
-                    </div>
-
-                    <div class="campo">
-                        <label for="observacoes">Observações</label>
-                        <textarea id="observacoes" name="observacoes" rows="4">${cliente?.observacoes || ''}</textarea>
-                    </div>
-
-                    <div class="acoes-formulario">
-                        <button type="button" class="btn-secundario" onclick="app.clientes.cancelarEdicao()">Cancelar</button>
-                        <button type="submit" class="btn-primario">${isEdicao ? 'Salvar' : 'Cadastrar'}</button>
-                    </div>
-                </form>
+                <div class="cliente-form" style="display: none;">
+                    <h3>Cadastrar Cliente</h3>
+                    <form id="formCliente">
+                        <input type="hidden" id="clienteId">
+                        <div class="form-group">
+                            <label for="nome">Nome Completo</label>
+                            <input type="text" id="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefone">Telefone</label>
+                            <input type="tel" id="telefone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="dataNascimento">Data de Nascimento</label>
+                            <input type="date" id="dataNascimento">
+                        </div>
+                        <div class="form-group">
+                            <label for="observacoes">Observações</label>
+                            <textarea id="observacoes"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary btn-cancelar-cliente">Cancelar</button>
+                            <button type="button" class="btn btn-primary btn-salvar-cliente">Salvar</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         `;
     }
 
     // Inicializa eventos
     inicializarEventos() {
-        const form = document.getElementById('form-cliente');
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.btn-novo-cliente')) {
+                this.abrirFormulario();
+            } else if (e.target.matches('.btn-salvar-cliente')) {
                 this.salvarCliente();
-            });
-        }
+            } else if (e.target.matches('.btn-cancelar-cliente')) {
+                this.fecharFormulario();
+            } else if (e.target.matches('.btn-editar-cliente')) {
+                const id = e.target.dataset.id;
+                this.editarCliente(id);
+            } else if (e.target.matches('.btn-excluir-cliente')) {
+                const id = e.target.dataset.id;
+                this.excluirCliente(id);
+            }
+        });
     }
 
     // Abre formulário para novo cliente
-    novoCliente() {
-        const container = document.getElementById('conteudo-pagina');
-        container.innerHTML = this.renderizarFormulario();
-        this.inicializarEventos();
+    abrirFormulario() {
+        const lista = document.querySelector('.clientes-lista');
+        const formulario = document.querySelector('.cliente-form');
+        
+        if (lista && formulario) {
+            lista.style.display = 'none';
+            formulario.style.display = 'block';
+            document.getElementById('formCliente').reset();
+            document.getElementById('clienteId').value = '';
+        }
     }
 
     // Abre formulário para editar cliente
     editarCliente(id) {
         const cliente = this.clientes.find(c => c.id === id);
-        if (cliente) {
-            const container = document.getElementById('conteudo-pagina');
-            container.innerHTML = this.renderizarFormulario(cliente);
-            this.inicializarEventos();
-        }
+        if (!cliente) return;
+
+        document.getElementById('clienteId').value = cliente.id;
+        document.getElementById('nome').value = cliente.nome;
+        document.getElementById('telefone').value = cliente.telefone;
+        document.getElementById('email').value = cliente.email || '';
+        document.getElementById('dataNascimento').value = cliente.dataNascimento || '';
+        document.getElementById('observacoes').value = cliente.observacoes || '';
+
+        this.abrirFormulario();
     }
 
     // Salva cliente (novo ou edição)
     salvarCliente() {
-        const form = document.getElementById('form-cliente');
-        const id = form.querySelector('#cliente-id').value;
-        const dados = {
-            id: id ? parseInt(id) : Date.now(),
-            nome: form.querySelector('#nome').value,
-            whatsapp: form.querySelector('#whatsapp').value,
-            dataNascimento: form.querySelector('#dataNascimento').value,
-            tipoPele: form.querySelector('#tipoPele').value,
-            observacoes: form.querySelector('#observacoes').value
+        const form = document.getElementById('formCliente');
+        if (!form) return;
+
+        const clienteId = document.getElementById('clienteId').value;
+        const cliente = {
+            id: clienteId || Date.now().toString(),
+            nome: document.getElementById('nome').value,
+            telefone: document.getElementById('telefone').value,
+            email: document.getElementById('email').value,
+            dataNascimento: document.getElementById('dataNascimento').value,
+            observacoes: document.getElementById('observacoes').value,
+            dataCadastro: clienteId ? this.clientes.find(c => c.id === clienteId)?.dataCadastro : new Date().toISOString(),
+            ultimaVisita: clienteId ? this.clientes.find(c => c.id === clienteId)?.ultimaVisita : null
         };
 
-        if (id) {
-            const index = this.clientes.findIndex(c => c.id === parseInt(id));
-            this.clientes[index] = dados;
+        if (clienteId) {
+            const index = this.clientes.findIndex(c => c.id === clienteId);
+            if (index !== -1) {
+                this.clientes[index] = cliente;
+            }
         } else {
-            this.clientes.push(dados);
+            this.clientes.push(cliente);
         }
 
-        Storage.salvar(CONFIG.STORAGE_KEYS.CLIENTES, this.clientes);
-        this.renderizar(document.getElementById('conteudo-pagina'));
+        if (Storage.salvar(CONFIG.STORAGE_KEYS.CLIENTES, this.clientes)) {
+            this.fecharFormulario();
+            this.renderizar(document.querySelector('.main-content'));
+            alert('Cliente salvo com sucesso!');
+        } else {
+            alert('Erro ao salvar cliente. Tente novamente.');
+        }
     }
 
     // Exclui cliente
     excluirCliente(id) {
         if (confirm('Tem certeza que deseja excluir este cliente?')) {
             this.clientes = this.clientes.filter(c => c.id !== id);
-            Storage.salvar(CONFIG.STORAGE_KEYS.CLIENTES, this.clientes);
-            this.renderizar(document.getElementById('conteudo-pagina'));
+            if (Storage.salvar(CONFIG.STORAGE_KEYS.CLIENTES, this.clientes)) {
+                this.renderizar(document.querySelector('.main-content'));
+                alert('Cliente excluído com sucesso!');
+            } else {
+                alert('Erro ao excluir cliente. Tente novamente.');
+            }
         }
     }
 
-    // Visualiza histórico do cliente
-    visualizarHistorico(id) {
-        // Implementação futura
-        alert('Funcionalidade em desenvolvimento');
-    }
-
-    // Cancela edição e volta para lista
-    cancelarEdicao() {
-        this.renderizar(document.getElementById('conteudo-pagina'));
-    }
-
-    // Formata data para exibição
-    formatarData(data) {
-        if (!data) return '';
-        return new Date(data).toLocaleDateString('pt-BR');
+    // Fecha o formulário de cadastro
+    fecharFormulario() {
+        const lista = document.querySelector('.clientes-lista');
+        const formulario = document.querySelector('.cliente-form');
+        
+        if (lista && formulario) {
+            lista.style.display = 'block';
+            formulario.style.display = 'none';
+        }
     }
 }
 

@@ -2,189 +2,190 @@
 class Servicos {
     constructor() {
         this.servicos = Storage.carregar(CONFIG.STORAGE_KEYS.SERVICOS) || [];
+        this.inicializarEventos();
     }
 
     // Renderiza a página de serviços
     renderizar(container) {
         container.innerHTML = `
+            <div class="page-header">
+                <h2>Serviços</h2>
+                <button class="btn btn-primary btn-novo-servico">
+                    <i class="material-icons">add</i>
+                    Novo Serviço
+                </button>
+            </div>
+
             <div class="servicos-container">
-                <div class="servicos-lista" id="servicos-lista">
-                    ${this.renderizarLista()}
-                </div>
-            </div>
-        `;
-    }
-
-    // Renderiza a lista de serviços
-    renderizarLista() {
-        if (this.servicos.length === 0) {
-            return `
-                <div class="sem-dados">
-                    <span class="material-icons">miscellaneous_services</span>
-                    <p>Nenhum serviço cadastrado</p>
-                </div>
-            `;
-        }
-
-        return `
-            <div class="tabela-container">
-                <table class="tabela">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Categoria</th>
-                            <th>Duração</th>
-                            <th>Valor</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${this.servicos.map(servico => `
+                <div class="servicos-lista">
+                    <table>
+                        <thead>
                             <tr>
-                                <td>${servico.nome}</td>
-                                <td>${servico.categoria}</td>
-                                <td>${servico.duracao} min</td>
-                                <td>${this.formatarValor(servico.valor)}</td>
-                                <td>
-                                    <button class="btn-acao" onclick="app.servicos.editarServico(${servico.id})">
-                                        <span class="material-icons">edit</span>
-                                    </button>
-                                    <button class="btn-acao" onclick="app.servicos.excluirServico(${servico.id})">
-                                        <span class="material-icons">delete</span>
-                                    </button>
-                                </td>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Duração</th>
+                                <th>Valor</th>
+                                <th>Ações</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }
-
-    // Renderiza o formulário de serviço
-    renderizarFormulario(servico = null) {
-        const isEdicao = servico !== null;
-        const titulo = isEdicao ? 'Editar Serviço' : 'Novo Serviço';
-
-        return `
-            <div class="formulario-container">
-                <h3>${titulo}</h3>
-                <form id="form-servico" class="formulario">
-                    <input type="hidden" id="servico-id" value="${servico?.id || ''}">
-                    
-                    <div class="campo">
-                        <label for="nome">Nome do Serviço</label>
-                        <input type="text" id="nome" name="nome" required value="${servico?.nome || ''}">
-                    </div>
-
-                    <div class="campo">
-                        <label for="categoria">Categoria</label>
-                        <select id="categoria" name="categoria" required>
-                            <option value="">Selecione...</option>
-                            ${CONFIG.CATEGORIAS_SERVICOS.map(categoria => `
-                                <option value="${categoria}" ${servico?.categoria === categoria ? 'selected' : ''}>
-                                    ${categoria}
-                                </option>
+                        </thead>
+                        <tbody>
+                            ${this.servicos.map(servico => `
+                                <tr>
+                                    <td>${servico.nome}</td>
+                                    <td>${servico.categoria}</td>
+                                    <td>${servico.duracao} min</td>
+                                    <td>R$ ${servico.valor.toFixed(2)}</td>
+                                    <td>
+                                        <button class="btn-icon btn-editar-servico" data-id="${servico.id}">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+                                        <button class="btn-icon btn-excluir-servico" data-id="${servico.id}">
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                    </td>
+                                </tr>
                             `).join('')}
-                        </select>
-                    </div>
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="campo">
-                        <label for="duracao">Duração (minutos)</label>
-                        <input type="number" id="duracao" name="duracao" required min="1" value="${servico?.duracao || ''}">
-                    </div>
-
-                    <div class="campo">
-                        <label for="valor">Valor (R$)</label>
-                        <input type="number" id="valor" name="valor" required min="0" step="0.01" value="${servico?.valor || ''}">
-                    </div>
-
-                    <div class="campo">
-                        <label for="descricao">Descrição</label>
-                        <textarea id="descricao" name="descricao" rows="4">${servico?.descricao || ''}</textarea>
-                    </div>
-
-                    <div class="acoes-formulario">
-                        <button type="button" class="btn-secundario" onclick="app.servicos.cancelarEdicao()">Cancelar</button>
-                        <button type="submit" class="btn-primario">${isEdicao ? 'Salvar' : 'Cadastrar'}</button>
-                    </div>
-                </form>
+                <div class="servico-form" style="display: none;">
+                    <h3>Cadastrar Serviço</h3>
+                    <form id="formServico">
+                        <input type="hidden" id="servicoId">
+                        <div class="form-group">
+                            <label for="nome">Nome do Serviço</label>
+                            <input type="text" id="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoria">Categoria</label>
+                            <select id="categoria" required>
+                                <option value="">Selecione uma categoria</option>
+                                ${CONFIG.CATEGORIAS_SERVICOS.map(categoria => 
+                                    `<option value="${categoria}">${categoria}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="duracao">Duração (minutos)</label>
+                            <input type="number" id="duracao" min="15" step="15" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="valor">Valor (R$)</label>
+                            <input type="number" id="valor" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descricao">Descrição</label>
+                            <textarea id="descricao" rows="4"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary btn-cancelar-servico">Cancelar</button>
+                            <button type="button" class="btn btn-primary btn-salvar-servico">Salvar</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         `;
     }
 
     // Inicializa eventos
     inicializarEventos() {
-        const form = document.getElementById('form-servico');
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.btn-novo-servico')) {
+                this.abrirFormulario();
+            } else if (e.target.matches('.btn-salvar-servico')) {
                 this.salvarServico();
-            });
+            } else if (e.target.matches('.btn-cancelar-servico')) {
+                this.fecharFormulario();
+            } else if (e.target.matches('.btn-editar-servico')) {
+                const id = e.target.dataset.id;
+                this.editarServico(id);
+            } else if (e.target.matches('.btn-excluir-servico')) {
+                const id = e.target.dataset.id;
+                this.excluirServico(id);
+            }
+        });
+    }
+
+    abrirFormulario() {
+        const lista = document.querySelector('.servicos-lista');
+        const formulario = document.querySelector('.servico-form');
+        
+        if (lista && formulario) {
+            lista.style.display = 'none';
+            formulario.style.display = 'block';
+            document.getElementById('formServico').reset();
+            document.getElementById('servicoId').value = '';
         }
     }
 
-    // Abre formulário para novo serviço
-    novoServico() {
-        const container = document.getElementById('conteudo-pagina');
-        container.innerHTML = this.renderizarFormulario();
-        this.inicializarEventos();
-    }
-
-    // Abre formulário para editar serviço
-    editarServico(id) {
-        const servico = this.servicos.find(s => s.id === id);
-        if (servico) {
-            const container = document.getElementById('conteudo-pagina');
-            container.innerHTML = this.renderizarFormulario(servico);
-            this.inicializarEventos();
+    fecharFormulario() {
+        const lista = document.querySelector('.servicos-lista');
+        const formulario = document.querySelector('.servico-form');
+        
+        if (lista && formulario) {
+            lista.style.display = 'block';
+            formulario.style.display = 'none';
         }
     }
 
-    // Salva serviço (novo ou edição)
     salvarServico() {
-        const form = document.getElementById('form-servico');
-        const id = form.querySelector('#servico-id').value;
-        const dados = {
-            id: id ? parseInt(id) : Date.now(),
-            nome: form.querySelector('#nome').value,
-            categoria: form.querySelector('#categoria').value,
-            duracao: parseInt(form.querySelector('#duracao').value),
-            valor: parseFloat(form.querySelector('#valor').value),
-            descricao: form.querySelector('#descricao').value
+        const form = document.getElementById('formServico');
+        if (!form) return;
+
+        const servicoId = document.getElementById('servicoId').value;
+        const servico = {
+            id: servicoId || Date.now().toString(),
+            nome: document.getElementById('nome').value,
+            categoria: document.getElementById('categoria').value,
+            duracao: parseInt(document.getElementById('duracao').value),
+            valor: parseFloat(document.getElementById('valor').value),
+            descricao: document.getElementById('descricao').value,
+            dataCadastro: servicoId ? this.servicos.find(s => s.id === servicoId)?.dataCadastro : new Date().toISOString()
         };
 
-        if (id) {
-            const index = this.servicos.findIndex(s => s.id === parseInt(id));
-            this.servicos[index] = dados;
+        if (servicoId) {
+            const index = this.servicos.findIndex(s => s.id === servicoId);
+            if (index !== -1) {
+                this.servicos[index] = servico;
+            }
         } else {
-            this.servicos.push(dados);
+            this.servicos.push(servico);
         }
 
-        Storage.salvar(CONFIG.STORAGE_KEYS.SERVICOS, this.servicos);
-        this.renderizar(document.getElementById('conteudo-pagina'));
+        if (Storage.salvar(CONFIG.STORAGE_KEYS.SERVICOS, this.servicos)) {
+            this.fecharFormulario();
+            this.renderizar(document.querySelector('.main-content'));
+            alert('Serviço salvo com sucesso!');
+        } else {
+            alert('Erro ao salvar serviço. Tente novamente.');
+        }
     }
 
-    // Exclui serviço
+    editarServico(id) {
+        const servico = this.servicos.find(s => s.id === id);
+        if (!servico) return;
+
+        document.getElementById('servicoId').value = servico.id;
+        document.getElementById('nome').value = servico.nome;
+        document.getElementById('categoria').value = servico.categoria;
+        document.getElementById('duracao').value = servico.duracao;
+        document.getElementById('valor').value = servico.valor;
+        document.getElementById('descricao').value = servico.descricao || '';
+
+        this.abrirFormulario();
+    }
+
     excluirServico(id) {
         if (confirm('Tem certeza que deseja excluir este serviço?')) {
             this.servicos = this.servicos.filter(s => s.id !== id);
-            Storage.salvar(CONFIG.STORAGE_KEYS.SERVICOS, this.servicos);
-            this.renderizar(document.getElementById('conteudo-pagina'));
+            if (Storage.salvar(CONFIG.STORAGE_KEYS.SERVICOS, this.servicos)) {
+                this.renderizar(document.querySelector('.main-content'));
+                alert('Serviço excluído com sucesso!');
+            } else {
+                alert('Erro ao excluir serviço. Tente novamente.');
+            }
         }
-    }
-
-    // Cancela edição e volta para lista
-    cancelarEdicao() {
-        this.renderizar(document.getElementById('conteudo-pagina'));
-    }
-
-    // Formata valor para exibição
-    formatarValor(valor) {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        }).format(valor);
     }
 }
 

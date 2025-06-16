@@ -1,6 +1,14 @@
 // Classe principal da aplicação
 class App {
     constructor() {
+        this.configuracoes = Storage.carregar(CONFIG.STORAGE_KEYS.CONFIGURACOES) || CONFIG.DEFAULT_CONFIG;
+        this.clientes = new Clientes();
+        this.agendamentos = new Agendamentos();
+        this.servicos = new Servicos();
+        this.financeiro = new Financeiro();
+        this.estoque = new Estoque();
+        this.configuracoesModulo = new Configuracoes();
+        
         this.inicializar();
     }
 
@@ -10,53 +18,32 @@ class App {
         this.navegarPara('dashboard');
     }
 
-    carregarTema() {
-        const config = Storage.carregar(CONFIG.STORAGE_KEYS.CONFIGURACOES);
-        if (config && config.tema) {
-            document.body.className = `tema-${config.tema}`;
-            document.getElementById('tema-toggle').checked = config.tema === 'escuro';
-        }
-    }
-
     inicializarEventos() {
-        // Evento de navegação
-        document.querySelectorAll('.menu-item').forEach(item => {
+        // Eventos de navegação
+        document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
-                const pagina = e.currentTarget.getAttribute('href').substring(1);
+                const pagina = e.currentTarget.dataset.pagina;
                 this.navegarPara(pagina);
-                
-                // Fecha o menu mobile ao clicar em um item
-                if (window.innerWidth <= 768) {
-                    this.fecharMenuMobile();
-                }
             });
         });
 
-        // Evento do toggle de tema
-        document.getElementById('tema-toggle').addEventListener('change', (e) => {
-            const tema = e.target.checked ? 'escuro' : 'claro';
-            document.body.className = `tema-${tema}`;
-            
-            const config = Storage.carregar(CONFIG.STORAGE_KEYS.CONFIGURACOES);
-            config.tema = tema;
-            Storage.salvar(CONFIG.STORAGE_KEYS.CONFIGURACOES, config);
+        // Evento do botão de tema
+        document.querySelector('.btn-tema').addEventListener('click', () => {
+            this.alternarTema();
         });
 
-        // Menu Mobile
-        const menuToggle = document.querySelector('.menu-toggle');
-        const sidebar = document.querySelector('.sidebar');
-        const overlay = document.querySelector('.menu-overlay');
-
-        menuToggle.addEventListener('click', () => {
+        // Evento do menu mobile
+        document.querySelector('.menu-toggle').addEventListener('click', () => {
             this.toggleMenuMobile();
         });
 
-        overlay.addEventListener('click', () => {
+        // Evento do overlay
+        document.querySelector('.menu-overlay').addEventListener('click', () => {
             this.fecharMenuMobile();
         });
 
-        // Fecha o menu ao redimensionar para desktop
+        // Evento de redimensionamento
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
                 this.fecharMenuMobile();
@@ -64,55 +51,17 @@ class App {
         });
     }
 
-    toggleMenuMobile() {
-        const sidebar = document.querySelector('.sidebar');
-        const overlay = document.querySelector('.menu-overlay');
-        
-        sidebar.classList.toggle('ativo');
-        overlay.classList.toggle('ativo');
-    }
-
-    fecharMenuMobile() {
-        const sidebar = document.querySelector('.sidebar');
-        const overlay = document.querySelector('.menu-overlay');
-        
-        sidebar.classList.remove('ativo');
-        overlay.classList.remove('ativo');
-    }
-
     navegarPara(pagina) {
+        const container = document.querySelector('.main-content');
+        if (!container) return;
+
         // Atualiza menu ativo
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('ativo');
-            if (item.getAttribute('href') === `#${pagina}`) {
-                item.classList.add('ativo');
-            }
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.pagina === pagina);
         });
 
-        // Atualiza título da página
-        document.getElementById('titulo-pagina').textContent = this.getTituloPagina(pagina);
-
         // Carrega conteúdo da página
-        this.carregarPagina(pagina);
-    }
-
-    getTituloPagina(pagina) {
-        const titulos = {
-            dashboard: 'Dashboard',
-            clientes: 'Clientes',
-            agendamentos: 'Agendamentos',
-            servicos: 'Serviços',
-            financeiro: 'Financeiro',
-            estoque: 'Estoque',
-            configuracoes: 'Configurações'
-        };
-        return titulos[pagina] || 'Dashboard';
-    }
-
-    carregarPagina(pagina) {
-        const container = document.getElementById('conteudo-pagina');
-        
-        switch(pagina) {
+        switch (pagina) {
             case 'dashboard':
                 this.dashboard.renderizar(container);
                 break;
@@ -132,13 +81,44 @@ class App {
                 this.estoque.renderizar(container);
                 break;
             case 'configuracoes':
-                this.configuracoes.renderizar(container);
+                this.configuracoesModulo.renderizar(container);
                 break;
-            default:
-                this.dashboard.renderizar(container);
         }
+
+        // Fecha menu mobile após navegação
+        if (window.innerWidth <= 768) {
+            this.fecharMenuMobile();
+        }
+    }
+
+    carregarTema() {
+        document.body.classList.toggle('tema-escuro', this.configuracoes.tema === 'escuro');
+    }
+
+    alternarTema() {
+        this.configuracoes.tema = this.configuracoes.tema === 'claro' ? 'escuro' : 'claro';
+        Storage.salvar(CONFIG.STORAGE_KEYS.CONFIGURACOES, this.configuracoes);
+        this.carregarTema();
+    }
+
+    toggleMenuMobile() {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.menu-overlay');
+        
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
+    fecharMenuMobile() {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.menu-overlay');
+        
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
     }
 }
 
-// Inicializa a aplicação
-const app = new App(); 
+// Inicializa a aplicação quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', () => {
+    window.app = new App();
+}); 

@@ -1,26 +1,24 @@
-/* Variáveis de cores */
+/* Variáveis */
 :root {
-    --cor-primaria: #ff69b4;
-    --cor-secundaria: #ffb6c1;
-    --cor-fundo: #ffffff;
-    --cor-fundo-card: #f8f9fa;
+    /* Cores do tema claro */
+    --cor-primaria: #FF69B4;
+    --cor-secundaria: #E6A4E6;
+    --cor-fundo: #FFFFFF;
     --cor-texto: #333333;
-    --cor-texto-secundario: #666666;
-    --cor-borda: #e0e0e0;
-    --cor-hover: #f0f0f0;
-    --cor-erro: #dc3545;
-    --cor-sucesso: #28a745;
-    --cor-alerta: #ffc107;
+    --cor-borda: #E0E0E0;
+    --cor-hover: #F5F5F5;
+    --cor-sombra: rgba(0, 0, 0, 0.1);
 }
 
-/* Tema Escuro */
-.tema-escuro {
-    --cor-fundo: #1a1a1a;
-    --cor-fundo-card: #2d2d2d;
-    --cor-texto: #ffffff;
-    --cor-texto-secundario: #cccccc;
-    --cor-borda: #404040;
-    --cor-hover: #404040;
+/* Tema escuro */
+body.tema-escuro {
+    --cor-primaria: #FF69B4;
+    --cor-secundaria: #E6A4E6;
+    --cor-fundo: #1A1A1A;
+    --cor-texto: #FFFFFF;
+    --cor-borda: #333333;
+    --cor-hover: #2A2A2A;
+    --cor-sombra: rgba(0, 0, 0, 0.3);
 }
 
 /* Reset e estilos base */
@@ -35,6 +33,274 @@ body {
     background-color: var(--cor-fundo);
     color: var(--cor-texto);
     line-height: 1.6;
+}
+
+/* Layout principal */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: var(--cor-fundo);
+    border-right: 1px solid var(--cor-borda);
+    padding: 1rem;
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 1rem 0;
+    text-align: center;
+    border-bottom: 1px solid var(--cor-borda);
+    margin-bottom: 1rem;
+}
+
+.sidebar-header h1 {
+    font-size: 1.5rem;
+    color: var(--cor-primaria);
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--cor-texto);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-item:hover {
+    background-color: var(--cor-hover);
+}
+
+.nav-item.active {
+    background-color: var(--cor-primaria);
+    color: white;
+}
+
+.nav-item i {
+    margin-right: 0.75rem;
+}
+
+/* Conteúdo principal */
+.main-content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 1rem;
+    transition: margin-left 0.3s ease;
+}
+
+.main-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--cor-borda);
+    margin-bottom: 1rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Botões */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--cor-primaria);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--cor-secundaria);
+}
+
+.btn-secondary {
+    background-color: var(--cor-borda);
+    color: var(--cor-texto);
+}
+
+.btn-secondary:hover {
+    background-color: var(--cor-hover);
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: var(--cor-texto);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-icon:hover {
+    background-color: var(--cor-hover);
+}
+
+/* Menu mobile */
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1001;
+    background: none;
+    border: none;
+    color: var(--cor-texto);
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+th {
+    font-weight: 500;
+    color: var(--cor-primaria);
+}
+
+/* Formulários */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--cor-texto);
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--cor-borda);
+    border-radius: 4px;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .menu-overlay.active {
+        display: block;
+    }
+}
+
+/* Utilitários */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.content-container {
+    background-color: var(--cor-fundo);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--cor-sombra);
+    padding: 1rem;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Variáveis de cores */
+:root {
+    --cor-fundo-card: #f8f9fa;
+    --cor-texto-secundario: #666666;
+    --cor-erro: #dc3545;
+    --cor-sucesso: #28a745;
+    --cor-alerta: #ffc107;
+}
+
+/* Tema Escuro */
+.tema-escuro {
+    --cor-fundo: #1a1a1a;
+    --cor-fundo-card: #2d2d2d;
+    --cor-texto: #ffffff;
+    --cor-texto-secundario: #cccccc;
+    --cor-borda: #404040;
+    --cor-hover: #404040;
 }
 
 /* Layout principal */
@@ -536,124 +802,6 @@ body {
     gap: 10px;
     justify-content: flex-end;
     margin-top: 20px;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 60px;
-        padding: 10px;
-    }
-
-    .sidebar .logo h2,
-    .sidebar .menu-item span:not(.material-icons),
-    .sidebar-footer span:not(.material-icons) {
-        display: none;
-    }
-
-    .sidebar .menu-item {
-        justify-content: center;
-        padding: 10px;
-    }
-
-    .sidebar .menu-item .material-icons {
-        margin: 0;
-    }
-
-    .conteudo-principal {
-        margin-left: 60px;
-    }
-
-    .cabecalho {
-        padding: 10px;
-    }
-
-    .cabecalho h1 {
-        font-size: 1.2rem;
-    }
-
-    .cabecalho-acoes {
-        gap: 10px;
-    }
-
-    .cabecalho-acoes button {
-        padding: 8px;
-    }
-
-    .cabecalho-acoes .material-icons {
-        font-size: 1.2rem;
-    }
-
-    .tabela-container {
-        overflow-x: auto;
-    }
-
-    .tabela {
-        min-width: 600px;
-    }
-
-    .formulario-container {
-        padding: 15px;
-    }
-
-    .acoes-formulario {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .acoes-formulario button {
-        width: 100%;
-    }
-
-    .card {
-        width: 100%;
-    }
-
-    .resumo-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .filtros {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .filtros .campo {
-        width: 100%;
-    }
-
-    .btn-novo {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-novo .material-icons {
-        font-size: 24px;
-    }
-
-    .btn-novo span:not(.material-icons) {
-        display: none;
-    }
-
-    .estoque-container .resumo-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .estoque-lista .tabela th:nth-child(3),
-    .estoque-lista .tabela td:nth-child(3),
-    .estoque-lista .tabela th:nth-child(4),
-    .estoque-lista .tabela td:nth-child(4) {
-        display: none;
-    }
 }
 
 /* Ajustes para telas muito pequenas */

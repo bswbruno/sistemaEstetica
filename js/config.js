@@ -12,29 +12,32 @@ const CONFIG = {
 
     // Configurações padrão
     DEFAULT_CONFIG: {
-        nomeEstudio: 'Meu Estúdio de Estética',
-        telefone: '',
-        endereco: '',
         tema: 'claro',
-        cores: {
-            primaria: '#FF69B4',
-            secundaria: '#E6A4E6'
-        }
+        nomeEstabelecimento: 'Sistema Estética',
+        endereco: '',
+        telefone: '',
+        email: '',
+        horarioAbertura: '09:00',
+        horarioFechamento: '18:00',
+        intervaloAgendamento: 30
     },
 
-    // Status de agendamento
+    // Status de agendamentos
     STATUS_AGENDAMENTO: {
         AGENDADO: 'Agendado',
+        CONFIRMADO: 'Confirmado',
+        CANCELADO: 'Cancelado',
         CONCLUIDO: 'Concluído',
-        CANCELADO: 'Cancelado'
+        FALTOU: 'Faltou'
     },
 
     // Categorias de serviços
     CATEGORIAS_SERVICOS: [
         'Facial',
         'Corporal',
-        'Depilação',
         'Massagem',
+        'Depilação',
+        'Manicure/Pedicure',
         'Outros'
     ],
 
@@ -48,22 +51,35 @@ const CONFIG = {
     ]
 };
 
-// Funções de utilidade para localStorage
-const Storage = {
-    salvar: (chave, dados) => {
-        localStorage.setItem(chave, JSON.stringify(dados));
-    },
-
-    carregar: (chave) => {
-        const dados = localStorage.getItem(chave);
-        return dados ? JSON.parse(dados) : null;
-    },
-
-    remover: (chave) => {
-        localStorage.removeItem(chave);
-    },
-
-    limpar: () => {
-        localStorage.clear();
+// Classe para gerenciamento do armazenamento
+class Storage {
+    static salvar(chave, dados) {
+        try {
+            localStorage.setItem(chave, JSON.stringify(dados));
+            return true;
+        } catch (erro) {
+            console.error('Erro ao salvar dados:', erro);
+            return false;
+        }
     }
-}; 
+
+    static carregar(chave) {
+        try {
+            const dados = localStorage.getItem(chave);
+            return dados ? JSON.parse(dados) : null;
+        } catch (erro) {
+            console.error('Erro ao carregar dados:', erro);
+            return null;
+        }
+    }
+
+    static limpar(chave) {
+        try {
+            localStorage.removeItem(chave);
+            return true;
+        } catch (erro) {
+            console.error('Erro ao limpar dados:', erro);
+            return false;
+        }
+    }
+} 
