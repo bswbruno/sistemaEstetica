@@ -15,14 +15,17 @@ class Agendamentos {
                 this.salvarAgendamento();
             } else if (e.target.matches('.btn-cancelar-agendamento')) {
                 this.fecharFormulario();
-            } else if (e.target.matches('.btn-editar-agendamento')) {
-                const id = e.target.dataset.id;
+            } else if (e.target.matches('.btn-editar-agendamento') || e.target.closest('.btn-editar-agendamento')) {
+                const button = e.target.matches('.btn-editar-agendamento') ? e.target : e.target.closest('.btn-editar-agendamento');
+                const id = button.dataset.id;
                 this.editarAgendamento(id);
-            } else if (e.target.matches('.btn-excluir-agendamento')) {
-                const id = e.target.dataset.id;
+            } else if (e.target.matches('.btn-excluir-agendamento') || e.target.closest('.btn-excluir-agendamento')) {
+                const button = e.target.matches('.btn-excluir-agendamento') ? e.target : e.target.closest('.btn-excluir-agendamento');
+                const id = button.dataset.id;
                 this.excluirAgendamento(id);
-            } else if (e.target.matches('.btn-concluir-agendamento')) {
-                const id = e.target.dataset.id;
+            } else if (e.target.matches('.btn-concluir-agendamento') || e.target.closest('.btn-concluir-agendamento')) {
+                const button = e.target.matches('.btn-concluir-agendamento') ? e.target : e.target.closest('.btn-concluir-agendamento');
+                const id = button.dataset.id;
                 this.concluirAgendamento(id);
             }
         });
@@ -187,14 +190,20 @@ class Agendamentos {
         const agendamento = this.agendamentos.find(a => a.id === id);
         if (!agendamento) return;
 
-        document.getElementById('agendamentoId').value = agendamento.id;
-        document.getElementById('clienteId').value = agendamento.clienteId;
-        document.getElementById('servicoId').value = agendamento.servicoId;
-        document.getElementById('dataHora').value = agendamento.dataHora;
-        document.getElementById('status').value = agendamento.status;
-        document.getElementById('observacoes').value = agendamento.observacoes || '';
+        const lista = document.querySelector('.agendamentos-lista');
+        const formulario = document.querySelector('.agendamento-form');
+        
+        if (lista && formulario) {
+            lista.style.display = 'none';
+            formulario.style.display = 'block';
 
-        this.abrirFormulario();
+            document.getElementById('agendamentoId').value = agendamento.id;
+            document.getElementById('clienteId').value = agendamento.clienteId;
+            document.getElementById('servicoId').value = agendamento.servicoId;
+            document.getElementById('dataHora').value = agendamento.dataHora;
+            document.getElementById('status').value = agendamento.status;
+            document.getElementById('observacoes').value = agendamento.observacoes || '';
+        }
     }
 
     concluirAgendamento(id) {
