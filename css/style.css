@@ -265,6 +265,8 @@ input:focus, textarea:focus, select:focus {
     margin-bottom: 1rem;
 }
 
+
+
 .content-container {
     background-color: var(--cor-fundo);
     border-radius: 8px;
@@ -836,6 +838,14 @@ input:focus, textarea:focus, select:focus {
     top: 10px;
     left: 10px;
     z-index: 1000;
+}
+
+.page-header {
+    display: flex;
+    font-size: 14px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
 .menu-toggle .material-icons {
