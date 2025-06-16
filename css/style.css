@@ -166,10 +166,10 @@ body {
 
 /* Menu mobile */
 .menu-toggle {
-    display: none;
+    display: block;
     position: fixed;
     top: 1rem;
-    left: 1rem;
+    left: 0rem;
     z-index: 1001;
     background: none;
     border: none;
@@ -912,5 +912,110 @@ input:focus, textarea:focus, select:focus {
 
     .menu-overlay.ativo {
         display: block;
+    }
+}
+
+/* Configurações */
+.configuracoes-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.configuracoes-secao {
+    background: var(--cor-fundo);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--sombra);
+}
+
+.configuracoes-secao h3 {
+    color: var(--cor-texto);
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    border-bottom: 2px solid var(--cor-borda);
+    padding-bottom: 10px;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campo label {
+    color: var(--cor-texto);
+    font-weight: 500;
+}
+
+.campo input {
+    padding: 10px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 4px;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+}
+
+.campo input:focus {
+    border-color: var(--cor-primaria);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--cor-primaria-rgb), 0.1);
+}
+
+.acoes-formulario {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.backup-acoes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-secundario {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 15px;
+    background: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+    border-radius: 4px;
+    color: var(--cor-texto);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secundario:hover {
+    background: var(--cor-hover);
+    border-color: var(--cor-primaria);
+    color: var(--cor-primaria);
+}
+
+.btn-secundario i {
+    font-size: 20px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .configuracoes-container {
+        padding: 10px;
+    }
+
+    .backup-acoes {
+        flex-direction: column;
+    }
+
+    .btn-secundario {
+        width: 100%;
+        justify-content: center;
     }
 } 

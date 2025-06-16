@@ -54,15 +54,15 @@ class Configuracoes {
                 <div class="configuracoes-secao">
                     <h3>Backup e Restauração</h3>
                     <div class="backup-acoes">
-                        <button class="btn-secundario" onclick="app.configuracoes.exportarDados()">
+                        <button class="btn-secundario" onclick="app.configuracoesModulo.exportarDados()">
                             <span class="material-icons">download</span>
                             Exportar Dados
                         </button>
-                        <button class="btn-secundario" onclick="app.configuracoes.importarDados()">
+                        <button class="btn-secundario" onclick="app.configuracoesModulo.importarDados()">
                             <span class="material-icons">upload</span>
                             Importar Dados
                         </button>
-                        <button class="btn-secundario" onclick="app.configuracoes.limparDados()">
+                        <button class="btn-secundario" onclick="app.configuracoesModulo.limparDados()">
                             <span class="material-icons">delete_forever</span>
                             Limpar Dados
                         </button>
@@ -207,10 +207,4 @@ class Configuracoes {
             window.location.reload();
         }
     }
-}
-
-// Adiciona o módulo de configurações à aplicação
-App.prototype.configuracoes = new Configuracoes();
-App.prototype.carregarConfiguracoes = function(container) {
-    this.configuracoes.renderizar(container);
-}; 
+} 

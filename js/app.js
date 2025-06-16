@@ -13,13 +13,13 @@ class App {
     }
 
     inicializar() {
-        this.carregarTema();
         this.inicializarEventos();
+        this.carregarTema();
         this.navegarPara('dashboard');
     }
 
     inicializarEventos() {
-        // Eventos de navegação
+        // Eventos do menu
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -29,21 +29,24 @@ class App {
         });
 
         // Evento do botão de tema
-        document.querySelector('.btn-tema').addEventListener('click', () => {
-            this.alternarTema();
-        });
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.alternarTema());
+        }
 
         // Evento do menu mobile
-        document.querySelector('.menu-toggle').addEventListener('click', () => {
-            this.toggleMenuMobile();
-        });
+        const menuToggle = document.getElementById('menuToggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => this.toggleMenuMobile());
+        }
 
-        // Evento do overlay
-        document.querySelector('.menu-overlay').addEventListener('click', () => {
-            this.fecharMenuMobile();
-        });
+        // Evento do overlay do menu mobile
+        const menuOverlay = document.getElementById('menuOverlay');
+        if (menuOverlay) {
+            menuOverlay.addEventListener('click', () => this.fecharMenuMobile());
+        }
 
-        // Evento de redimensionamento
+        // Evento de redimensionamento da janela
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
                 this.fecharMenuMobile();
@@ -92,18 +95,22 @@ class App {
     }
 
     carregarTema() {
-        document.body.classList.toggle('tema-escuro', this.configuracoes.tema === 'escuro');
+        if (this.configuracoes.tema === 'escuro') {
+            document.body.classList.add('tema-escuro');
+        } else {
+            document.body.classList.remove('tema-escuro');
+        }
     }
 
     alternarTema() {
-        this.configuracoes.tema = this.configuracoes.tema === 'claro' ? 'escuro' : 'claro';
+        this.configuracoes.tema = this.configuracoes.tema === 'escuro' ? 'claro' : 'escuro';
         Storage.salvar(CONFIG.STORAGE_KEYS.CONFIGURACOES, this.configuracoes);
         this.carregarTema();
     }
 
     toggleMenuMobile() {
         const sidebar = document.querySelector('.sidebar');
-        const overlay = document.querySelector('.menu-overlay');
+        const overlay = document.getElementById('menuOverlay');
         
         sidebar.classList.toggle('active');
         overlay.classList.toggle('active');
@@ -111,7 +118,7 @@ class App {
 
     fecharMenuMobile() {
         const sidebar = document.querySelector('.sidebar');
-        const overlay = document.querySelector('.menu-overlay');
+        const overlay = document.getElementById('menuOverlay');
         
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
